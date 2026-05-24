@@ -1,7 +1,9 @@
 PCSX-ReARMed - yet another PCSX fork
 ====================================
 
-## MOD Features (lcdyk0517)
+## MOD Features
+* **Per-game BIOS**: place a `<gamename>.bios` file next to the game image
+  to use a custom BIOS for that specific game. Other games use normal BIOS.
 * **Built-in cheat database**: 5300+ games with 56000+ cheat codes embedded
   directly in the core. Cheats appear as dynamic core options under the
   "Cheats" category. No external cheat files needed.

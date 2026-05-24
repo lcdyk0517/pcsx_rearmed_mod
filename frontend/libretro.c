@@ -2160,6 +2160,40 @@ bool retro_load_game(const struct retro_game_info *info)
     /* Init embedded cheat database for this game */
     cheat_db_init(CdromId);
 
+    /* Check for per-game BIOS: <game_name>.bios / <game_name>.BIOS
+       in the same directory as the game file */
+    Config.GameBiosPath[0] = '\0';
+    if (info->path && info->path[0]) {
+       char bios_path[PATH_MAX];
+       size_t len = strlen(info->path);
+       /* Find extension dot (last dot after last slash) */
+       const char *last_slash = strrchr(info->path, '/');
+       if (!last_slash) last_slash = strrchr(info->path, '\\');
+       const char *name_start = last_slash ? (last_slash + 1) : info->path;
+       const char *last_dot = strrchr(name_start, '.');
+       if (last_dot) {
+          size_t base_len = (size_t)(last_dot - info->path);
+          /* Try .bios */
+          memcpy(bios_path, info->path, base_len);
+          memcpy(bios_path + base_len, ".bios", 6);
+          FILE *ftest = fopen(bios_path, "rb");
+          if (ftest) {
+             fclose(ftest);
+             snprintf(Config.GameBiosPath, sizeof(Config.GameBiosPath), "%s", bios_path);
+          } else {
+             /* Try .BIOS */
+             memcpy(bios_path + base_len, ".BIOS", 6);
+             ftest = fopen(bios_path, "rb");
+             if (ftest) {
+                fclose(ftest);
+                snprintf(Config.GameBiosPath, sizeof(Config.GameBiosPath), "%s", bios_path);
+             }
+          }
+       }
+       if (Config.GameBiosPath[0])
+          SysPrintf("Using per-game BIOS: %s\n", Config.GameBiosPath);
+    }
+
    load_memcards();
    plugin_call_rearmed_cbs();
    SysReset();
