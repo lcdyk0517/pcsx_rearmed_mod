@@ -52,6 +52,11 @@ extern "C" {
 
 struct retro_core_option_v2_category option_cats_us[] = {
    {
+      "cheat",
+      "Cheats",
+      "Game-specific cheat codes. Changes take effect after saving."
+   },
+   {
       "system",
       "System",
       "Configure base hardware parameters: region, BIOS selection, memory cards, etc."
@@ -1824,7 +1829,7 @@ struct retro_core_options_v2 *options_intl[RETRO_LANGUAGE_LAST] = {
    NULL,        /* RETRO_LANGUAGE_RUSSIAN */
    NULL,        /* RETRO_LANGUAGE_KOREAN */
    NULL,        /* RETRO_LANGUAGE_CHINESE_TRADITIONAL */
-   NULL,        /* RETRO_LANGUAGE_CHINESE_SIMPLIFIED */
+    &options_chs, /* RETRO_LANGUAGE_CHINESE_SIMPLIFIED */
    NULL,        /* RETRO_LANGUAGE_ESPERANTO */
    NULL,        /* RETRO_LANGUAGE_POLISH */
    NULL,        /* RETRO_LANGUAGE_VIETNAMESE */
@@ -2120,6 +2125,88 @@ error:
          variables = NULL;
       }
    }
+}
+
+/**
+ * Register merged core options: static options + cheat options.
+ * Preserves translations by using SET_CORE_OPTIONS_V2_INTL.
+ * Returns true on success.
+ */
+static INLINE bool libretro_set_cheat_core_options(
+      retro_environment_t environ_cb,
+      struct retro_core_option_v2_definition *cheat_defs,
+      size_t cheat_count)
+{
+   unsigned version = 0;
+   unsigned language = 0;
+   if (!environ_cb || !cheat_defs || cheat_count == 0)
+      return false;
+
+   if (!environ_cb(RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION, &version))
+      version = 0;
+
+   if (version >= 2) {
+      size_t i;
+      size_t static_count = 0;
+      while (option_defs_us[static_count].key)
+         static_count++;
+
+      size_t total = static_count + cheat_count;
+
+      /* Build base (English) merged definitions:
+       * cheat options prepended at front so they appear first */
+      struct retro_core_option_v2_definition *merged_us =
+         (struct retro_core_option_v2_definition *)
+         calloc(total + 1, sizeof(struct retro_core_option_v2_definition));
+      if (!merged_us)
+         return false;
+
+      for (i = 0; i < cheat_count; i++)
+         merged_us[i] = cheat_defs[i];
+      for (i = 0; i < static_count; i++)
+         merged_us[cheat_count + i] = option_defs_us[i];
+
+      /* Build translated definitions if language is set */
+      struct retro_core_options_v2 merged_options_us = { option_cats_us, merged_us };
+      struct retro_core_options_v2 *merged_local = NULL;
+      struct retro_core_option_v2_definition *merged_defs_local = NULL;
+
+      if (environ_cb(RETRO_ENVIRONMENT_GET_LANGUAGE, &language) &&
+          language < RETRO_LANGUAGE_LAST && language != RETRO_LANGUAGE_ENGLISH) {
+         struct retro_core_options_v2 *opts_local = options_intl[language];
+         if (opts_local && opts_local->definitions) {
+            merged_defs_local =
+               (struct retro_core_option_v2_definition *)
+               calloc(total + 1, sizeof(struct retro_core_option_v2_definition));
+            if (merged_defs_local) {
+               /* Cheat options prepended at front, key-only */
+               for (i = 0; i < cheat_count; i++)
+                  merged_defs_local[i].key = cheat_defs[i].key;
+               /* Copy translated static options */
+               for (i = 0; i < static_count; i++)
+                  merged_defs_local[cheat_count + i] = opts_local->definitions[i];
+               /* Use translated categories if available, otherwise English */
+               struct retro_core_option_v2_category *cats =
+                  opts_local->categories ? opts_local->categories : option_cats_us;
+               merged_local = (struct retro_core_options_v2 *)
+                  calloc(1, sizeof(struct retro_core_options_v2));
+               if (merged_local) {
+                  merged_local->categories = cats;
+                  merged_local->definitions = merged_defs_local;
+               }
+            }
+         }
+      }
+
+      struct retro_core_options_v2_intl intl_options = { &merged_options_us, merged_local };
+      bool ret = environ_cb(RETRO_ENVIRONMENT_SET_CORE_OPTIONS_V2_INTL, &intl_options);
+
+      free(merged_us);
+      free(merged_defs_local);
+      free(merged_local);
+      return ret;
+   }
+   return false;
 }
 
 #ifdef __cplusplus

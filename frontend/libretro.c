@@ -51,6 +51,7 @@
 
 #include <libretro.h>
 #include "libretro_core_options.h"
+#include "libretro_cheats.h"
 
 #ifdef USE_LIBRETRO_VFS
 #include <streams/file_stream_transforms.h>
@@ -210,7 +211,7 @@ static bool axis_bounds_modifier;
 
 //Dummy functions
 bool retro_load_game_special(unsigned game_type, const struct retro_game_info *info, size_t num_info) { return false; }
-void retro_unload_game(void) {}
+void retro_unload_game(void) { cheat_db_free(); }
 static int vout_open(void) { return 0; }
 static void vout_close(void) {}
 static int snd_init(void) { return 0; }
@@ -2096,19 +2097,22 @@ bool retro_load_game(const struct retro_game_info *info)
    for (i = 0; i < 8; ++i)
       in_type[i] = PSE_PAD_TYPE_STANDARD;
 
-   if (!is_exe)
-   {
-      if (CheckCdrom() == -1)
-      {
-         LogErr("unsupported/invalid CD image: %s\n", info->path);
-         return false;
-      }
-   }
-   else
-   {
-      Config.PsxRegion = PSX_REGION_US;
-      Config.PsxType = PSX_TYPE_NTSC;
-   }
+    if (!is_exe)
+    {
+       if (CheckCdrom() == -1)
+       {
+          LogErr("unsupported/invalid CD image: %s\n", info->path);
+          return false;
+       }
+    }
+    else
+    {
+       Config.PsxRegion = PSX_REGION_US;
+       Config.PsxType = PSX_TYPE_NTSC;
+    }
+
+    /* Init embedded cheat database for this game */
+    cheat_db_init(CdromId);
 
    load_memcards();
    plugin_call_rearmed_cbs();
@@ -2123,7 +2127,21 @@ bool retro_load_game(const struct retro_game_info *info)
       LogErr("could not load %s (%d)\n", is_exe ? "exe" : "CD", ret);
       return false;
    }
-   emu_on_new_cd(0);
+    emu_on_new_cd(0);
+
+    /* Load embedded cheats and register as core options */
+    cheat_db_load();
+    {
+       size_t cheat_count;
+       struct retro_core_option_v2_definition *cheat_defs =
+          cheat_db_get_option_defs(&cheat_count);
+       if (cheat_defs && cheat_count > 0) {
+          libretro_set_cheat_core_options(environ_cb,
+                cheat_defs, cheat_count);
+          cheat_db_update_variable(environ_cb, true);
+          cheat_db_update(environ_cb);
+       }
+    }
 
    set_retro_memmap();
    retro_set_audio_buff_status_cb();
@@ -3482,9 +3500,11 @@ void retro_run(void)
 
    update_input();
 
-   bool updated = false;
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
-      update_variables(true);
+    bool updated = false;
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated) {
+       update_variables(true);
+       cheat_db_update(environ_cb);
+    }
 
    psxRegs.stop = 0;
    psxCpu->Execute(&psxRegs);
@@ -3909,6 +3929,8 @@ void retro_init(void)
 void retro_deinit(void)
 {
    size_t i;
+
+   cheat_db_free();
 
    if (plugins_opened)
    {
