@@ -115,6 +115,7 @@ typedef struct {
 	char Mcd2[MAXPATHLEN];
 	char Bios[PSX_REGION_COUNT][64]; // us, jp, eu; see psxMemReset()
 	char BiosDir[MAXPATHLEN];
+	char GameBiosPath[MAXPATHLEN]; // per-game BIOS override
 	char PluginsDir[MAXPATHLEN];
 	char PatchesDir[MAXPATHLEN];
 	boolean Xa;

@@ -300,6 +300,25 @@ void psxMemReset() {
 
 	Config.HLE = TRUE;
 
+	/* Try per-game BIOS override first */
+	if (Config.GameBiosPath[0]) {
+#ifdef HAVE_LIBRETRO
+		f = fopen(Config.GameBiosPath, "rb");
+		if (f) {
+			rret = fread(psxRegs.ptrs.psxR, 1, 0x80000, f);
+			fclose(f);
+			if (rret == 0x80000) {
+				SysMessage("Loaded per-game BIOS \"%s\".\n", Config.GameBiosPath);
+				Config.HLE = FALSE;
+				return;
+			}
+			SysMessage("Per-game BIOS \"%s\" is of wrong size, falling back.\n", Config.GameBiosPath);
+		} else {
+			SysMessage("Could not open per-game BIOS: \"%s\"\n", Config.GameBiosPath);
+		}
+#endif
+	}
+
 	if (r >= count || !Config.Bios[r][0])
 		r = 0;
 
