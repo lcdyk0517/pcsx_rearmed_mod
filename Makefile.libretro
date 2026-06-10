@@ -148,7 +148,7 @@ ifneq (,$(shell $(CC) -E -dD $(CFLAGS) include/arm_features.h | grep 'HAVE_NEON3
 endif
 endif
 ifneq (,$(filter $(ARCH_DETECTED),i686 x86_64 arm64 aarch64))
-	BUILTIN_GPU = neon
+	BUILTIN_GPU ?= neon
 endif
 
 # platform specific options
@@ -170,6 +170,26 @@ else ifneq (,$(findstring CortexA73_G12B,$(platform)))
 	DYNAREC = ari64
 	CFLAGS += -fomit-frame-pointer -ffast-math -DARM
 	CFLAGS += -march=armv8-a+crc -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53
+
+# RK3326 (Cortex-A35)
+else ifeq ($(platform), rk3326)
+	TARGET := $(TARGET_NAME)_libretro.so
+	fpic := -fPIC
+	ARCH = arm64
+	BUILTIN_GPU = neon
+	DYNAREC = ari64
+	CFLAGS += -fomit-frame-pointer -ffast-math -DARM
+	CFLAGS += -march=armv8-a+crc -mcpu=cortex-a35 -mtune=cortex-a35
+
+# RK3562 (Cortex-A53)
+else ifeq ($(platform), rk3562)
+	TARGET := $(TARGET_NAME)_libretro.so
+	fpic := -fPIC
+	ARCH = arm64
+	BUILTIN_GPU = neon
+	DYNAREC = ari64
+	CFLAGS += -fomit-frame-pointer -ffast-math -DARM
+	CFLAGS += -march=armv8-a+crc -mcpu=cortex-a53 -mtune=cortex-a53
 
 # ALLWINNER H5
 else ifneq (,$(findstring h5,$(platform)))
