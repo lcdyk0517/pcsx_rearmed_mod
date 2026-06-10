@@ -578,7 +578,7 @@ struct retro_core_option_v2_definition option_defs_chs[] = {
    {
       "pcsx_rearmed_neon_interlace_enable_v2",
       "(GPU) 显示隔行视频",
-      NULL,
+      "显示隔行视频",
       "启用隔行扫描视频显示。",
       NULL,
       NULL,
@@ -593,7 +593,7 @@ struct retro_core_option_v2_definition option_defs_chs[] = {
    {
       "pcsx_rearmed_neon_enhancement_enable",
       "(GPU) 增强分辨率",
-      NULL,
+      "增强分辨率",
       "启用增强分辨率渲染。",
       NULL,
       NULL,
@@ -607,7 +607,7 @@ struct retro_core_option_v2_definition option_defs_chs[] = {
    {
       "pcsx_rearmed_neon_enhancement_no_main",
       "(GPU) 增强分辨率加速",
-      NULL,
+      "增强分辨率加速",
       "加速增强分辨率渲染。",
       NULL,
       NULL,
@@ -621,7 +621,7 @@ struct retro_core_option_v2_definition option_defs_chs[] = {
    {
       "pcsx_rearmed_neon_enhancement_tex_adj_v2",
       "(GPU) 增强分辨率纹理调整",
-      NULL,
+      "增强分辨率纹理调整",
       "调整增强分辨率下的纹理坐标。",
       NULL,
       NULL,
@@ -651,7 +651,7 @@ struct retro_core_option_v2_definition option_defs_chs[] = {
    {
       "pcsx_rearmed_gpu_peops_odd_even_bit",
       "(GPU) 奇偶位修正",
-      NULL,
+      "奇偶位修正",
       "启用奇偶位修正。",
       NULL,
       NULL,
@@ -665,7 +665,7 @@ struct retro_core_option_v2_definition option_defs_chs[] = {
    {
       "pcsx_rearmed_gpu_peops_expand_screen_width",
       "(GPU) 扩展屏幕宽度",
-      NULL,
+      "扩展屏幕宽度",
       "扩展屏幕宽度。",
       NULL,
       NULL,
@@ -679,7 +679,7 @@ struct retro_core_option_v2_definition option_defs_chs[] = {
    {
       "pcsx_rearmed_gpu_peops_ignore_brightness",
       "(GPU) 忽略亮度颜色",
-      NULL,
+      "忽略亮度颜色",
       "忽略亮度颜色信息。",
       NULL,
       NULL,
@@ -693,7 +693,7 @@ struct retro_core_option_v2_definition option_defs_chs[] = {
    {
       "pcsx_rearmed_gpu_peops_disable_coord_check",
       "(GPU) 禁用坐标检查",
-      NULL,
+      "禁用坐标检查",
       "禁用坐标检查。",
       NULL,
       NULL,
@@ -707,7 +707,7 @@ struct retro_core_option_v2_definition option_defs_chs[] = {
    {
       "pcsx_rearmed_gpu_peops_lazy_screen_update",
       "(GPU) 延迟屏幕更新",
-      NULL,
+      "延迟屏幕更新",
       "延迟屏幕更新以提高性能。",
       NULL,
       NULL,
@@ -721,7 +721,7 @@ struct retro_core_option_v2_definition option_defs_chs[] = {
    {
       "pcsx_rearmed_gpu_peops_repeated_triangles",
       "(GPU) 重复平面纹理三角形",
-      NULL,
+      "重复平面纹理三角形",
       "重复绘制平面纹理三角形。",
       NULL,
       NULL,
@@ -735,7 +735,7 @@ struct retro_core_option_v2_definition option_defs_chs[] = {
    {
       "pcsx_rearmed_gpu_peops_quads_with_triangles",
       "(GPU) 用三角形绘制纹理四边形",
-      NULL,
+      "用三角形绘制纹理四边形",
       "使用三角形代替四边形绘制纹理。",
       NULL,
       NULL,
@@ -749,7 +749,7 @@ struct retro_core_option_v2_definition option_defs_chs[] = {
    {
       "pcsx_rearmed_gpu_peops_fake_busy_state",
       "(GPU) 伪造 GPU 忙碌状态",
-      NULL,
+      "伪造 GPU 忙碌状态",
       "伪造 GPU 忙碌状态。",
       NULL,
       NULL,
@@ -780,7 +780,7 @@ struct retro_core_option_v2_definition option_defs_chs[] = {
    {
       "pcsx_rearmed_gpu_unai_old_renderer",
       "(GPU) 旧版渲染器",
-      NULL,
+      "旧版渲染器",
       "使用旧版渲染器。",
       NULL,
       NULL,
@@ -795,7 +795,7 @@ struct retro_core_option_v2_definition option_defs_chs[] = {
    {
       "pcsx_rearmed_gpu_unai_blending",
       "(GPU) 纹理混合",
-      NULL,
+      "纹理混合",
       "启用纹理混合效果。",
       NULL,
       NULL,
@@ -809,7 +809,7 @@ struct retro_core_option_v2_definition option_defs_chs[] = {
    {
       "pcsx_rearmed_gpu_unai_skipline",
       "(GPU) 隔行跳过",
-      NULL,
+      "隔行跳过",
       "跳过每隔一行渲染。",
       NULL,
       NULL,
@@ -823,7 +823,7 @@ struct retro_core_option_v2_definition option_defs_chs[] = {
    {
       "pcsx_rearmed_gpu_unai_lighting",
       "(GPU) 光照效果",
-      NULL,
+      "光照效果",
       "启用光照效果。",
       NULL,
       NULL,
@@ -837,7 +837,7 @@ struct retro_core_option_v2_definition option_defs_chs[] = {
    {
       "pcsx_rearmed_gpu_unai_fast_lighting",
       "(GPU) 快速光照",
-      NULL,
+      "快速光照",
       "使用快速光照算法。",
       NULL,
       NULL,
@@ -852,7 +852,7 @@ struct retro_core_option_v2_definition option_defs_chs[] = {
    {
       "pcsx_rearmed_spu_reverb",
       "音频混响效果",
-      NULL,
+      "混响效果",
       "启用音频混响效果。",
       NULL,
       NULL,
@@ -1701,7 +1701,7 @@ struct retro_core_option_v2_definition option_defs_chs[] = {
    {
       "pcsx_rearmed_nosmccheck",
       "(速度优化) 禁用 SMC 检查",
-      NULL,
+      "禁用 SMC 检查",
       "可能导致崩溃或损坏记忆卡。",
       NULL,
       NULL,
@@ -1715,7 +1715,7 @@ struct retro_core_option_v2_definition option_defs_chs[] = {
    {
       "pcsx_rearmed_gteregsunneeded",
       "(速度优化) 假设 GTE 寄存器不需要",
-      NULL,
+      "假设 GTE 寄存器不需要",
       "可能导致画面闪烁。",
       NULL,
       NULL,
@@ -1729,7 +1729,7 @@ struct retro_core_option_v2_definition option_defs_chs[] = {
    {
       "pcsx_rearmed_nogteflags",
       "(速度优化) 禁用 GTE 标志",
-      NULL,
+      "禁用 GTE 标志",
       "会导致渲染错误。",
       NULL,
       NULL,
